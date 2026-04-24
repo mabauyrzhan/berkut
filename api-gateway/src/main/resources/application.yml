@@ -1,0 +1,39 @@
+spring:
+  application:
+    name: api-gateway
+  datasource:
+    url: jdbc:postgresql://${POSTGRES_HOST:localhost}:${POSTGRES_PORT:5433}/${POSTGRES_DB:berkut}
+    username: ${POSTGRES_USER:berkut}
+    password: ${POSTGRES_PASSWORD:berkut}
+    hikari:
+      maximum-pool-size: 8
+  # No Flyway here — processor-service owns the schema.
+  flyway:
+    enabled: false
+  data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
+      timeout: 2s
+  kafka:
+    bootstrap-servers: ${KAFKA_BOOTSTRAP:localhost:9092}
+
+# Each gateway instance claims a unique random group.id — every instance receives every
+# message and fans out to its own WebSocket clients. See KafkaFanoutConfig and README.
+fanout:
+  group-id-gps: api-gateway-gps-${random.uuid}
+  group-id-events: api-gateway-events-${random.uuid}
+
+server:
+  port: 8090
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus
+
+logging:
+  level:
+    org.apache.kafka: WARN
+    kz.berkut: INFO

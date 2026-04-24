@@ -1,0 +1,37 @@
+spring:
+  application:
+    name: simulator
+  kafka:
+    bootstrap-servers: ${KAFKA_BOOTSTRAP:localhost:9092}
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      acks: "1"
+      compression-type: lz4
+      properties:
+        spring.json.add.type.headers: false
+        linger.ms: 20
+
+simulator:
+  fleet:
+    size: 1000
+    seed: 42
+  gps:
+    interval-seconds: 3
+    jitter-ms: 1000
+  event:
+    rate-per-vehicle-per-min: 0.2     # ~200 events/min for 1k vehicles
+    burst-probability: 0.1            # 10% of events trigger a 3-7 follow-up burst
+  bbox:
+    center-lat: 43.2389
+    center-lon: 76.8897
+    radius-km: 10
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics
+
+server:
+  port: 8090

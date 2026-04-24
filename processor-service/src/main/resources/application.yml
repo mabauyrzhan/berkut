@@ -1,0 +1,49 @@
+spring:
+  application:
+    name: processor-service
+  datasource:
+    url: jdbc:postgresql://${POSTGRES_HOST:localhost}:${POSTGRES_PORT:5433}/${POSTGRES_DB:berkut}
+    username: ${POSTGRES_USER:berkut}
+    password: ${POSTGRES_PASSWORD:berkut}
+    hikari:
+      maximum-pool-size: 10
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+    baseline-on-migrate: true
+  data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
+      timeout: 2s
+  kafka:
+    bootstrap-servers: ${KAFKA_BOOTSTRAP:localhost:9092}
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      acks: "1"
+      properties:
+        spring.json.add.type.headers: false
+        linger.ms: 20
+
+dedup:
+  window:
+    seconds: 30
+
+webhook:
+  url: ${WEBHOOK_URL:}
+
+server:
+  port: 8092
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus
+
+logging:
+  level:
+    org.apache.kafka: WARN
+    org.flywaydb: INFO
+    kz.berkut: INFO
